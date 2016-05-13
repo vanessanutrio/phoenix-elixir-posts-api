@@ -30,7 +30,9 @@ defmodule Posts.PostController do
 
 
   def create(conn, %{"comments" => comments, "challenge_id" => challenge_id, "parent_id" => parent_id, "user_id" => user_id}) do
-    new_post = %Post{comments: comments, challenge_id: challenge_id, parent_id: parent_id, user_id: user_id}
+    #new_post = %Post{comments: comments, challenge_id: challenge_id, parent_id: parent_id, user_id: user_id}
+
+    new_post = Post.changeset(%Post{}, %{comments: comments, challenge_id: challenge_id, parent_id: parent_id, user_id: user_id})
 
     case Repo.insert new_post do
       {:ok, new_post}  -> # Inserted or updated with success
@@ -41,7 +43,7 @@ defmodule Posts.PostController do
       {:error, changeset} -> # Something went wrong
         conn
         |> put_status(422)
-        render conn, "show.json", post: changeset.errors
+        render conn, "errors.json", changeset: changeset
         
     end
     
@@ -60,7 +62,7 @@ defmodule Posts.PostController do
       {:error, changeset} -> # Something went wrong
         conn
         |> put_status(400)
-        render conn, "show.json", post: changeset.errors
+        render conn, "errors.json", changeset: changeset
 
         
     end
@@ -78,7 +80,7 @@ defmodule Posts.PostController do
         {:error, changeset} -> # Something went wrong
           conn
           |> put_status(400)
-          render conn, "show.json", post: changeset.errors
+          render conn, "errors.json", changeset: changeset
       end
     else
       conn
