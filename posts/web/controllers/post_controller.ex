@@ -42,7 +42,7 @@ defmodule Posts.PostController do
 
       {:error, changeset} -> # Something went wrong
         conn
-        |> put_status(422)
+        |> put_status(:bad_request)
         render conn, "errors.json", changeset: changeset
         
     end
@@ -60,7 +60,7 @@ defmodule Posts.PostController do
           render conn, "show.json", post: post
         {:error, changeset} -> # Something went wrong
           conn
-          |> put_status(400)
+          |> put_status(:bad_request)
           render conn, "errors.json", changeset: changeset
 
           
@@ -74,15 +74,17 @@ defmodule Posts.PostController do
 
   def delete(conn, %{"id" => id}) do
     if post = Repo.get(Posts.Post, id) do
+
+      post = Post.changeset(post, %{ deleted_at: :calendar.local_time()})
     
-      case Repo.delete post do
-        {:ok, model}        -> # Updated with success
+      case Repo.update post do
+        {:ok, post}        -> # Updated with success
           conn 
-          |> put_status(200)
+          |> put_status(:ok)
           render conn, "show.json", post: post
         {:error, changeset} -> # Something went wrong
           conn
-          |> put_status(400)
+          |> put_status(:bad_request)
           render conn, "errors.json", changeset: changeset
       end
     else
