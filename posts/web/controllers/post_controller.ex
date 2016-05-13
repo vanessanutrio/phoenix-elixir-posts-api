@@ -47,24 +47,27 @@ defmodule Posts.PostController do
         
     end
     
-
   end
 
   def update(conn, %{"id" => id, "comments" => comments}) do
-    post = Repo.get(Posts.Post, id)
-    post = %{post | comments: comments}
+    if post = Repo.get(Posts.Post, id) do
+      post = Post.changeset(post, %{ comments: comments})
 
-    case Repo.update post do
-      {:ok, model}        -> # Updated with success
-        conn 
-        |> put_status(:ok)
-        render conn, "show.json", post: post
-      {:error, changeset} -> # Something went wrong
-        conn
-        |> put_status(400)
-        render conn, "errors.json", changeset: changeset
+      case Repo.update post do
+        {:ok, post}        -> # Updated with success
+          conn 
+          |> put_status(:ok)
+          render conn, "show.json", post: post
+        {:error, changeset} -> # Something went wrong
+          conn
+          |> put_status(400)
+          render conn, "errors.json", changeset: changeset
 
-        
+          
+      end
+    else
+      conn
+      |> send_resp(:not_found, "")
     end
   end
 
