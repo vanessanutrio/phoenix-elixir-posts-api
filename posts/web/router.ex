@@ -23,4 +23,10 @@ defmodule Posts.Router do
   # scope "/api", Posts do
   #   pipe_through :api
   # end
+
+  scope "/api", Posts do
+    pipe_through :api
+
+    resources "/posts", PostController
+  end
 end
