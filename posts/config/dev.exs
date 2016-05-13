@@ -35,8 +35,18 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :posts, Posts.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "posts_dev",
+  username: "services",
+  password: "Spamlard99",
+  database: "nutrio_development",
   hostname: "localhost",
   pool_size: 10
+
+# config :posts, Posts.Repo,
+#   adapter: Ecto.Adapters.Postgres,
+#   database: "nutrio_development",
+#   #port: "5433",
+#   hostname: "localhost",
+#   username: "services",
+#   password: "Spamlard99",
+#   pool_size: 10,
+#   ssl: true
