@@ -20,6 +20,7 @@ defmodule Posts.Post do
   def changeset(post, params \\ :empty) do
     post
     |> cast(params, ~w(comments user_id parent_id challenge_id deleted_at), ~w(comments user_id challenge_id))
+    |> validate_length(:comments, max: 100)
   end
 
 end

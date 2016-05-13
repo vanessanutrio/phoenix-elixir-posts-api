@@ -2,22 +2,22 @@ defmodule Posts.PostsControllerTest do
   use Posts.ConnCase
   alias Posts.Post
   alias Posts.Repo
-  #alias Ecto.Adapters.SQL
+  alias Ecto.Adapters.SQL
 
-  # setup do
-  #   SQL.begin_test_transaction(Repo)
+  setup do
+    SQL.begin_test_transaction(Repo)
 
-  #   on_exit fn ->
-  #     SQL.rollback_test_transaction(Repo)
-  #   end
-  # end
+    on_exit fn ->
+      SQL.rollback_test_transaction(Repo)
+    end
+  end
 
   test "/index returns a list of posts" do
     json =
       %Post{comments: "Hello World", challenge_id: 1, user_id: 1, parent_id: 1}
       |> Repo.insert
       |> List.wrap
-      #|> Poison.encode!
+      |> Poison.encode
 
     response = conn(:get, "/api/posts") |> send_request
 
