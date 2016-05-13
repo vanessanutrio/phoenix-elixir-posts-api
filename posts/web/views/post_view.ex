@@ -10,6 +10,7 @@ defmodule Posts.PostView do
   end
 
   def render("create.json", %{post: post}) do
+    IO.puts(inspect( post ))
     post
   end
 

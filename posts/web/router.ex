@@ -27,5 +27,6 @@ defmodule Posts.Router do
     pipe_through :api
 
     resources "/posts", PostController
+     put "/posts", PostController, :update
   end
 end

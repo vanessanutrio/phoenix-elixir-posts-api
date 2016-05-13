@@ -5,47 +5,54 @@ defmodule Posts.PostController do
 
   #plug :action
 
-  # def index(conn, %{"format" => "html"} = params) do
-  #   render conn, "index.html"
-  # end
+  def index(conn, %{"format" => "html"} = params) do
+    render conn, "index.html"
+  end
 
-  # def index(conn, %{"format" => "json"} = params) do
-  #   render conn, "index.json", posts: Repo.all(Post)
-  # end
+  def index(conn, %{"format" => "json"} = params) do
+    render conn, "index.json", posts: Repo.all(Post)
+  end
 
   # def new(conn, _params) do
   #   render conn, "new.html"
   # end
 
   def create(conn, %{"comments" => comments, "challenge_id" => challenge_id, "parent_id" => parent_id, "user_id" => user_id}) do
-    new_post = Post.changeset(%Post{}, %{comments: comments, challenge_id: challenge_id, parent_id: parent_id, user_id: user_id})
-    case new_post.valid? do
-      nil ->
-        new_post = Repo.insert(new_post)
+    new_post = %Post{comments: comments, challenge_id: challenge_id, parent_id: parent_id, user_id: user_id}
+
+    case Repo.insert new_post do
+      {:ok, new_post}  -> # Inserted or updated with success
         conn 
         |> put_status(201)
         render conn, "create.json", post: new_post
-      errors ->
+
+      {:error, changeset} -> # Something went wrong
         conn
         |> put_status(422)
-        |> json %{errors: errors}
+        render conn, "create.json", post: changeset.errors
+        
     end
+    
+
   end
 
-  # def update(conn, %{"id" => id, "post" => params}) do
-  #   post = Repo.get(Posts.Post, id)
-  #   post = %{post | comments: params["comments"]}
+  def update(conn, %{"id" => id, "comments" => comments}) do
+    post = Repo.get(Posts.Post, id)
+    post = %{post | comments: comments}
 
-  #   case Post.validate(post) do
-  #     nil ->
-  #       Repo.update(post)
-  #       conn 
-  #       |> put_status(200)
-  #       render conn, "show.html", post: post
-  #     errors ->
-  #       json conn, errors: errors
-  #   end
-  # end
+    case Repo.update post do
+      {:ok, model}        -> # Updated with success
+        conn 
+        |> put_status(200)
+        render conn, "create.json", post: post
+      {:error, changeset} -> # Something went wrong
+        conn
+        |> put_status(400)
+        render conn, "create.json", post: changeset.errors
+
+        
+    end
+  end
 
 
   # def destroy(conn, %{"id" => id}) do

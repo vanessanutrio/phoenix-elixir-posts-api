@@ -1,7 +1,7 @@
 defmodule Posts.Post do
   use Ecto.Model
   import Ecto.Changeset
-  @derive {Poison.Encoder, only: [:comments, :user_id, :parent_id, :challenge_id, :deleted_at, :muted_at]}
+  @derive {Poison.Encoder, only: [:id, :comments, :user_id, :parent_id, :challenge_id, :deleted_at, :muted_at]}
 
 
   schema "user_challenge_wall_posts" do
