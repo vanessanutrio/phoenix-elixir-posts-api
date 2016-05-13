@@ -17,6 +17,18 @@ defmodule Posts.PostController do
   #   render conn, "new.html"
   # end
 
+  def show(conn, %{"id" => id}) do
+    if post = Repo.get(Posts.Post, id) do
+      conn 
+      |> put_status(200)
+      render conn, "show.json", post: post
+    else
+      conn
+      |> send_resp(:not_found, "")
+    end
+  end
+
+
   def create(conn, %{"comments" => comments, "challenge_id" => challenge_id, "parent_id" => parent_id, "user_id" => user_id}) do
     new_post = %Post{comments: comments, challenge_id: challenge_id, parent_id: parent_id, user_id: user_id}
 
@@ -24,12 +36,12 @@ defmodule Posts.PostController do
       {:ok, new_post}  -> # Inserted or updated with success
         conn 
         |> put_status(201)
-        render conn, "create.json", post: new_post
+        render conn, "show.json", post: new_post
 
       {:error, changeset} -> # Something went wrong
         conn
         |> put_status(422)
-        render conn, "create.json", post: changeset.errors
+        render conn, "show.json", post: changeset.errors
         
     end
     
@@ -43,30 +55,36 @@ defmodule Posts.PostController do
     case Repo.update post do
       {:ok, model}        -> # Updated with success
         conn 
-        |> put_status(200)
-        render conn, "create.json", post: post
+        |> put_status(:ok)
+        render conn, "show.json", post: post
       {:error, changeset} -> # Something went wrong
         conn
         |> put_status(400)
-        render conn, "create.json", post: changeset.errors
+        render conn, "show.json", post: changeset.errors
 
         
     end
   end
 
 
-  # def destroy(conn, %{"id" => id}) do
-  #   post = Repo.get(Posts.Post, id)
-  #   case post do
-  #     post when is_map(post) ->
-  #       Repo.delete(post)
-  #       conn
-  #       |> put_status(201)
-  #       render conn, "show.html", post: post
-  #     _ ->
-  #       redirect conn, Router.Helpers.page_path(page: "unauthorized")
-  #   end
-  # end
+  def delete(conn, %{"id" => id}) do
+    if post = Repo.get(Posts.Post, id) do
+    
+      case Repo.delete post do
+        {:ok, model}        -> # Updated with success
+          conn 
+          |> put_status(200)
+          render conn, "show.json", post: post
+        {:error, changeset} -> # Something went wrong
+          conn
+          |> put_status(400)
+          render conn, "show.json", post: changeset.errors
+      end
+    else
+      conn
+      |> send_resp(:not_found, "")
+    end
+  end
 
 
 end
